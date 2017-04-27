@@ -40,13 +40,6 @@ SPRAL_FLAGS=-DHAVE_SPRAL -I$(SPRAL_INCDIR)
 LAPACK_LIBS=-llapack
 BLAS_LIBS=-lsatlas -L/usr/lib64/atlas
 
-
-#
-# Putting it all together
-#
-LIBS= $(SUPERLU_LIBS) $(HSL_LIBS) $(SPRAL_LIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FORTRAN_LIBS)
-CINCLUDES=$(SUPERLU_FLAGS) $(HSL_FLAGS) $(SPRAL_FLAGS)
-
 #
 # Compilers & such
 #
@@ -61,17 +54,25 @@ CCOPT=-g -O3
 LINKER=$(CC)
 FORTRAN_LIBS=-lgfortran
 
+
+#
+# Putting it all together
+#
+LIBS= $(SUPERLU_LIBS) $(HSL_LIBS) $(SPRAL_LIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FORTRAN_LIBS)
+CFLAGS=$(SUPERLU_FLAGS) $(HSL_FLAGS) $(SPRAL_FLAGS)
+
+
 #
 # Compile rules
 #
 .c.o:
-	$(CC) $(CCOPT) $(CINCLUDES) $(CDEFINES) -c $<
+	$(CC) $(CCOPT) $(CFLAGS) $(CINCLUDES) -c $< -o $@
 .f.o:
-	$(FC) $(FCOPT) $(FINCLUDES)  -c $<
+	$(FC) $(FCOPT) $(FINCLUDES)  -c $< -o $@
 .f90.o:
-	$(FC) $(FCOPT) $(FINCLUDES) -c $<
+	$(FC) $(FCOPT) $(FINCLUDES) -c $< -o $@
 .F.o:
-	$(FC) $(FCOPT) $(FINCLUDES) $(FDEFINES) -c $<
+	$(FC) $(FCOPT) $(FINCLUDES) $(FDEFINES) -c $< -o $@
 .F90.o:
-	$(FC) $(FCOPT) $(FINCLUDES) $(FDEFINES) -c $<
+	$(FC) $(FCOPT) $(FINCLUDES) $(FDEFINES) -c $< -o $@
 
