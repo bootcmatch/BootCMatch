@@ -17,7 +17,7 @@ all: test
 test: testkbootsolvers testsolving testbootstrap
 
 clean:
-	rm -f *.o testkbootsolvers testbootstrap testsolving
+	rm -f *.o $(RUNDIR)/testkbootsolvers $(RUNDIR)/testbootstrap $(RUNDIR)/testsolving
 
 ##################################################################
 # Rules

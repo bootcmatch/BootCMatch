@@ -1,40 +1,77 @@
-# This is Make.inc file generated automatically by the PSBLAS configure script.
-# It should be ready to use, included by Makefile.
-# If it gives problems, consider editing it.
+# This is Make.inc file.
+# Eventually it will be generated with a configure script.
 
-# These lines are quite portable.
-.mod=.mod
-.fh=.fh
-.SUFFIXES: 
+#
 .SUFFIXES: .f90 .F90 .f .F .c .o
 
 
-# The following ones are the variables used by the PSBLAS make scripts.
+#
+# Optional packages
+#
 
-F90=gfortran 
+# SuperLU: sparse factorization
+#  Versions 4 and 5 have a slightly different interface, need
+#  to define which one. 
+#
+SUPERLU_DIR=/opt/superlu/5.0/gnu/5.4.0
+SUPERLU_INCDIR=$(SUPERLU_DIR)/include
+SUPERLU_LIBDIR=$(SUPERLU_DIR)/lib 
+SUPERLU_LIBS=-lsuperlu -L$(SUPERLU_LIBDIR)
+SUPERLU_FLAGS=-DHAVE_SUPERLU -DSLU_VERSION_5 -I$(SUPERLU_INCDIR)
+
+# HSL library (for MC64)
+HSL_DIR=/opt/hsl
+HSL_INCDIR=$(HSL_DIR)/include
+HSL_LIBDIR=$(HSL_DIR)/lib
+HSL_LIBS=-lhsl_mc64 -L$(HSL_LIBDIR)
+HSL_FLAGS= -DHAVE_HSL -I$(HSL_INCDIR)
+
+# SPRAL package for auction algorithm
+SPRAL_DIR=/opt/spral
+SPRAL_INCDIR=$(SPRAL_DIR)/include
+SPRAL_LIBDIR=$(SPRAL_DIR)/lib
+SPRAL_LIBS=-lspral -L$(SPRAL_LIBDIR)
+SPRAL_FLAGS=-DHAVE_SPRAL -I$(SPRAL_INCDIR)
+
+
+#
+# LAPACK and BLAS are mandatory
+#
+LAPACK_LIBS=-llapack
+BLAS_LIBS=-lsatlas -L/usr/lib64/atlas
+
+
+#
+# Putting it all together
+#
+LIBS= $(SUPERLU_LIBS) $(HSL_LIBS) $(SPRAL_LIBS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FORTRAN_LIBS)
+CINCLUDES=$(SUPERLU_FLAGS) $(HSL_FLAGS) $(SPRAL_FLAGS)
+
+#
+# Compilers & such
+#
 FC=gfortran 
 CC=gcc
-F90COPT=-O3
-#-pg 
-FCOPT=-O3  
-#-pg
-CCOPT=-O3  
-#-pg
-
+FCOPT=-g -O3  
+CCOPT=-g -O3  
+#
+# Linking is done with CC by default; if using SPRAL and HSL you
+#  may need to link in the Fortran runtime. 
+#
 LINKER=$(CC)
-LIBS=-lsuperlu -L${SUPERLU_LIBDIR} -lhsl_mc64 -L${HSL_LIBDIR} -lspral -L${SPRAL_LIBDIR}  -llapack -lf77blas -latlas -L${SCALAPACK_LIBDIR} -L/usr/lib64/atlas -L${HOME}/NUMERICAL/LIB/atlas/gnu491 -lgfortran
+FORTRAN_LIBS=-lgfortran
 
-CINCLUDES=-DHAVE_SUPERLU -DSLU_VERSION_5 -I${SUPERLU_INCDIR} -DHAVE_HSL -I${HSL_INCDIR} -DHAVE_SPRAL  -I${SPRAL_INCDIR}
-
-# These should be portable rules, arent they?
+#
+# Compile rules
+#
 .c.o:
 	$(CC) $(CCOPT) $(CINCLUDES) $(CDEFINES) -c $<
 .f.o:
 	$(FC) $(FCOPT) $(FINCLUDES)  -c $<
 .f90.o:
-	$(F90) $(F90COPT) $(FINCLUDES) -c $<
+	$(FC) $(FCOPT) $(FINCLUDES) -c $<
 .F.o:
-	$(FC)  $(FCOPT)   $(FINCLUDES) $(FDEFINES) -c $<
+	$(FC) $(FCOPT) $(FINCLUDES) $(FDEFINES) -c $<
 .F90.o:
-	$(F90) $(F90COPT) $(FINCLUDES) $(FDEFINES) -c $<
+	$(FC) $(FCOPT) $(FINCLUDES) $(FDEFINES) -c $<
 
