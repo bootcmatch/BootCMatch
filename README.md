@@ -24,7 +24,7 @@ To see the software in action we provide three test programs:
 * testsolving       uses a set of AMG hierarchies as a linear system solver
 * testkbootsolver   uses a set of AMG hierarchies as a preconditioner for the FCG method. 
 
-At this time, you will have to edit the make.inc file by hand; when we get around to writing a configure script and a better  documentation we will declare version 1.0. 
+At this time, you will have to edit the make.inc file by hand to suit your computing environment. 
 
 For questions, please send an email to pasqua.dambra@cnr.it or salvatore.filippone@cranfield.ac.uk 
 
