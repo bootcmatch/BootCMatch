@@ -14,7 +14,7 @@ The AMG hierarchies are built by using a graph matching approach. We support thr
 2. The approximate auction algorithm from [SPRAL](http://www.numerical.rl.ac.uk/spral/);
 3. The exact matching from [HSL_MC64](http://www.hsl.rl.ac.uk/catalogue/hsl_mc64.html)
 
-In the application of the AMG hierarchy (as etiehr a solver or a preconditioner) we provide a simple factorization, but we recommend to use our interface to [SuperLU](http://crd-legacy.lbl.gov/~xiaoye/SuperLU/) for best performance.
+In the application of the AMG hierarchy (either as a solver or as a preconditioner) we provide a simple factorization, but we recommend to use our interface to [SuperLU](http://crd-legacy.lbl.gov/~xiaoye/SuperLU/) for best performance.
 To see the software in action we provide three test programs:
 * testbootstrap     builds a set of AMG hierarchies
 * testsolving       uses a set of AMG hierarchies as a linear system solver
