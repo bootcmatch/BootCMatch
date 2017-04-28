@@ -29,4 +29,4 @@ At this time, you will have to edit the make.inc file by hand to suit your compu
 For questions, please send an email to pasqua.dambra@cnr.it or salvatore.filippone@cranfield.ac.uk 
 
 This project was partially supported by the NSF under award DMS-1619640.
-This project was partially supported  by the EC under the Horizon 2020 Project Energy oriented Centre of Excellence for computing applications EoCoE, Project ID: 676629.
+This project was partially supported  by the EC under the Horizon 2020 Project: *Energy oriented Centre of Excellence for computing applications EoCoE*, Project ID: 676629.
