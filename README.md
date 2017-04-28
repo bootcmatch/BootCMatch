@@ -1,8 +1,12 @@
 # BootCMatch
 Welcome to BootCMatch:
 >     Bootstrap AMG based on Compatible Matching version 0.9
+This is the software package described in the paper:
+ P. D'Ambra, S. Filippone, P. Vassilevski
+ BootCMatch: a software package for bootstrap AMG based on graph weighted matching
+ submitted, 2017
 
-This is a software package containing the following components: 
+It contains  the following components: 
 1. A set of algorithms for building AMG hierarchies
 2. A set of solvers including: 
   * Standalone multigrid
@@ -24,3 +28,5 @@ At this time, you will have to edit the make.inc file by hand; when we get aroun
 
 For questions, please send an email to pasqua.dambra@cnr.it or salvatore.filippone@cranfield.ac.uk 
 
+This project was partially supported by the NSF under award DMS-1619640.
+This project was partially supported  by the EC under the Horizon 2020 Project Energy oriented Centre of Excellence for computing applications EoCoE, Project ID: 676629.
