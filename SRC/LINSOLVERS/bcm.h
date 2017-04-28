@@ -40,9 +40,9 @@
 #include "bcm_bootamg.h"
 #include "bcm_linsolvers.h"
 
-#define BCM_VERSION_STRING  "1.0-alpha"
-#define BCM_VERSION_MAJOR   1
-#define BCM_VERSION_MINOR   0
+#define BCM_VERSION_STRING  "0.9"
+#define BCM_VERSION_MAJOR   0
+#define BCM_VERSION_MINOR   9
 #define BCM_PATCHLEVEL      "-alpha"
 
 #endif
