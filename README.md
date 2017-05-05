@@ -1,6 +1,6 @@
 # BootCMatch
 Welcome to BootCMatch:
->     Bootstrap AMG based on Compatible Matching version 0.9
+>     Bootstrap AMG based on Compatible weighted Matching, version 0.9
 This is the software package described in the paper:
 
 P. D'Ambra, S. Filippone, P. Vassilevski: *BootCMatch: a software package for bootstrap AMG based on graph weighted matching,*
