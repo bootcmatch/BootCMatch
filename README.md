@@ -6,7 +6,7 @@ This is the software package described in the paper:
 P. D'Ambra, S. Filippone, P. Vassilevski: *BootCMatch: a software package for bootstrap AMG based on graph weighted matching,*
 submitted, 2017
 
-It contains  the following components: 
+It contains the following components: 
 1. A set of algorithms for building AMG hierarchies
 2. A set of solvers including: 
   * Standalone multigrid
