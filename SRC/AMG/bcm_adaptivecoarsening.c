@@ -1,10 +1,10 @@
 /*
                 BootCMatch
-     Bootstrap AMG based on Compatible weighted Matching, version 0.9
+     Bootstrap AMG based on Compatible Weighted Matching version 1.0
     (C) Copyright 2017
-                       Pasqua D'Ambra         IAC-CNR, IT
-                       Salvatore Filippone    Cranfield University, UK
-                       Panayot S. Vassilevski Portland State University, OR USA
+                       Pasqua D'Ambra    ICAR-CNR
+                       Salvatore Filippone Cranfield University
+                       Panayot S. Vassilevski CACR-LLNL
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -76,7 +76,6 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   rhs=bcm_VectorCreate(nsize_w);
   bcm_VectorInitialize(rhs);
 
-  bcm_CSRMatrixSort(A);
   /* initialize wtemp for restriction of the current smooth vector at each level */
   w_temp=bcm_VectorCreate(nsize_w);
   bcm_VectorInitialize(w_temp);
@@ -314,6 +313,12 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
     fprintf(stderr,"Error: unknown matching algorithm\n");
     return(-1);
   }
+
+/* needed for new De-norm */
+/*  bcm_Vector *D;
+  D=bcm_CSRMatrixDiag(A);
+  double *D_data=bcm_VectorData(D); */
+
   markc = (int *) calloc(nrows_A, sizeof(int));
   for(i=0; i<nrows_A; ++i) markc[i]=-1;
 
@@ -330,6 +335,8 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
 	      wagg0=w_data[i];
 	      wagg1=w_data[j];
 	      normwagg=sqrt(pow(wagg0,2)+pow(wagg1,2));
+//	      using the De-norm
+	      //normwagg=sqrt(D_data[i]*pow(wagg0,2)+D_data[j]*pow(wagg1,2));
 	      if(normwagg > DBL_EPSILON)
 		{
 		  markc[i]=ncolc;
@@ -410,7 +417,8 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   bcm_CSRMatrix *A, *P, *A_temp, *R, *P_temp,**P2;
   bcm_Vector *w, *wc, *w_temp, *w_temp1;
   int nsize_A, nsize_w;
-  double cmplx, cmplxfinal, cmplxsmoothed;
+  double cmplxfinal, cmplxsmoothed;
+  double wcmplxfinal, wcmplxsmoothed;
   bcm_Vector *rhs;
   int cr_relax_type, cr_it,  coarse_solver;
   double cr_relax_weight, cr_ratio;
@@ -492,10 +500,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
     bcm_CSRMatrixRelax(A_array[0], L_array[0], U_array[0], D_array[0],rhs,
 		       cr_relax_type, cr_relax_weight, w_temp);
 
-  cmplx=bcm_CSRMatrixNumNonzeros(A);
-  cmplxsmoothed=cmplx;
-  cmplxsmoothed=bcm_CSRMatrixNumNonzeros(A);
-
   int match_type=bcm_AMGBuildDataAggMatchType(amg_data);
 
   double timematching, timematchingtot;
@@ -537,6 +541,13 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   }  
   cmplxfinal=cmplxfinal/bcm_CSRMatrixNumNonzeros(A);
   bcm_AMGHierarchyOpCmplx(amg_hierarchy)=cmplxfinal;
+  wcmplxfinal=bcm_CSRMatrixNumNonzeros(A);
+  for(i=1; i< lev; i++){
+    wcmplxfinal += pow(2,i)*bcm_CSRMatrixNumNonzeros(A_array[i]); 
+  }  
+  wcmplxfinal=wcmplxfinal/bcm_CSRMatrixNumNonzeros(A);
+  bcm_AMGHierarchyOpCmplxW(amg_hierarchy)=wcmplxfinal;
+
   avcoarseratio=avcoarseratio/(lev-1);
 
   bcm_AMGHierarchyAvgCratio(amg_hierarchy)=avcoarseratio;
@@ -615,14 +626,23 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
 	  U_array[j+1]=bcm_CSRMatrixTriU(A_array[j+1],1);
 	  D_array[j+1]=bcm_CSRMatrixDiag(A_array[j+1]);
 
-	  cmplxsmoothed=cmplxsmoothed+bcm_CSRMatrixNumNonzeros(A_array[j+1]);
-
 	  bcm_CSRMatrixDestroy(R); 
 	  bcm_CSRMatrixDestroy(A_temp);
 	  bcm_VectorDestroy(Adiag);
 	}
-      cmplxsmoothed=cmplxsmoothed/bcm_CSRMatrixNumNonzeros(A);
-      bcm_AMGHierarchyOpCmplx(amg_hierarchy)=cmplxsmoothed;
+         cmplxsmoothed=bcm_CSRMatrixNumNonzeros(A);
+         for(i=1; i< lev; i++){
+            cmplxsmoothed += bcm_CSRMatrixNumNonzeros(A_array[i]); 
+          }  
+         cmplxsmoothed=cmplxsmoothed/bcm_CSRMatrixNumNonzeros(A);
+         bcm_AMGHierarchyOpCmplx(amg_hierarchy)=cmplxsmoothed;
+
+         wcmplxfinal=bcm_CSRMatrixNumNonzeros(A);
+         for(i=1; i< lev; i++){
+           wcmplxfinal += pow(2,i)*bcm_CSRMatrixNumNonzeros(A_array[i]); 
+          }  
+          wcmplxfinal=wcmplxfinal/bcm_CSRMatrixNumNonzeros(A);
+          bcm_AMGHierarchyOpCmplxW(amg_hierarchy)=wcmplxfinal;
 
     } 
 
@@ -747,7 +767,8 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
       printf("Size at level %d:  %d ; nnz %d\n", i, bcm_CSRMatrixNumRows(A_array[i]),
 	     bcm_CSRMatrixNumNonzeros(A_array[i]));
     }
-  printf("Current cmplx %e \n", bcm_AMGHierarchyOpCmplx(amg_hierarchy));
+  printf("Current cmplx for V-cycle %e \n", bcm_AMGHierarchyOpCmplx(amg_hierarchy));
+  printf("Current cmplx for W-cycle %e \n", bcm_AMGHierarchyOpCmplxW(amg_hierarchy));
   printf("Average Coarsening Ratio %e \n", bcm_AMGHierarchyAvgCratio(amg_hierarchy));
 
   return amg_hierarchy;

@@ -1,10 +1,10 @@
 /* 
                 BootCMatch 
-     Bootstrap AMG based on Compatible weighted Matching, version 0.9
+     Bootstrap AMG based on Compatible Weighted Matching version 1.0
     (C) Copyright 2017
-                       Pasqua D'Ambra         IAC-CNR, IT
-                       Salvatore Filippone    Cranfield University, UK
-                       Panayot S. Vassilevski Portland State University, OR USA
+                       Pasqua D'Ambra    ICAR-CNR
+                       Salvatore Filippone Cranfield University
+                       Panayot S. Vassilevski CACR-LLNL
  
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -64,7 +64,8 @@ typedef struct
   factors_t     *SLUfactors;
 #endif
   int           num_levels; /* number of levels of the hierachy */
-  double        op_cmplx;  /* operator complexity of the hierarchy */
+  double        op_cmplx;  /* operator complexity of the hierarchy for V-cycle*/
+  double        op_wcmplx;  /* operator complexity of the hierarchy for W-cycle*/
   double        avg_cratio;  /* average of coarsening ratio of the hierarchy */
   
 } bcm_AMGHierarchy;
@@ -81,6 +82,7 @@ typedef struct
 #define bcm_AMGHierarchyDArray(amg_hierarchy) ((amg_hierarchy)->D_array)
 #define bcm_AMGHierarchyNumLevels(amg_hierarchy) ((amg_hierarchy)->num_levels)
 #define bcm_AMGHierarchyOpCmplx(amg_hierarchy) ((amg_hierarchy)->op_cmplx)
+#define bcm_AMGHierarchyOpCmplxW(amg_hierarchy) ((amg_hierarchy)->op_wcmplx)
 #define bcm_AMGHierarchyAvgCratio(amg_hierarchy) ((amg_hierarchy)->avg_cratio)
 #ifdef HAVE_SUPERLU
 #define bcm_AMGHierarchyLUfactors(amg_hierarchy) ((amg_hierarchy)->SLUfactors)
