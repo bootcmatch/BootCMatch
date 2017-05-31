@@ -1,8 +1,8 @@
 /* 
                 BootCMatch 
-     Bootstrap AMG based on Compatible Weighted Matching version 1.0
+     Bootstrap AMG based on Compatible weighted Matching version 0.9
     (C) Copyright 2017
-                       Pasqua D'Ambra    ICAR-CNR
+                       Pasqua D'Ambra    IAC-CNR
                        Salvatore Filippone Cranfield University
                        Panayot S. Vassilevski CACR-LLNL
  
