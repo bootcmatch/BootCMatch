@@ -1,10 +1,10 @@
 /* 
                 BootCMatch 
-     Bootstrap AMG based on Compatible weighted Matching, version 0.9
+     Bootstrap AMG based on Compatible Weighted Matching version 1.0
     (C) Copyright 2017
-                       Pasqua D'Ambra         IAC-CNR, IT
-                       Salvatore Filippone    Cranfield University, UK
-                       Panayot S. Vassilevski Portland State University, OR USA
+                       Pasqua D'Ambra    ICAR-CNR
+                       Salvatore Filippone Cranfield University
+                       Panayot S. Vassilevski CACR-LLNL
  
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -240,7 +240,7 @@ int  main(int argc, char *argv[])
 
    /* initialize num_grid_sweeps parameter w.r.t. the number
       of levels and the chosen cycle.
-      We have to manage this in a setup routine after hierarchy building */
+      In the final release we have to manage this in a setup routine after hierarchy building */
    
    num_grid_sweeps = (int *) calloc(inparms.max_levels-1, sizeof(int));
    for(i=0; i<inparms.max_levels-1; i++) num_grid_sweeps[i]=1;
@@ -294,23 +294,28 @@ int  main(int argc, char *argv[])
    for(k=0;k<bcm_BootAMGNHrc(boot_amg); k++)  {
      printf("Component:  %d\n", k);
      printf("Number of levels:  %d\n", bcm_AMGHierarchyNumLevels(Harray[k]));
-     printf("Operator cmplx %e \n", bcm_AMGHierarchyOpCmplx(Harray[k]));
+     printf("Operator cmplx for V-cycle %e \n", bcm_AMGHierarchyOpCmplx(Harray[k]));
+     printf("Operator cmplx for W-cycle %e \n", bcm_AMGHierarchyOpCmplxW(Harray[k]));
    }
    printf("Wall Clock Time for Building:  %e\n", time2);
    /* printing statistics */
    double avgcratio=0.0;
    double avgcmpx=0.0;
+   double avgwcmpx=0.0;
    double avgnumlev=0.0;
    for (k=0;k<bcm_BootAMGNHrc(boot_amg); k++) {
      avgnumlev=avgnumlev+bcm_AMGHierarchyNumLevels(Harray[k]);
      avgcmpx=avgcmpx+bcm_AMGHierarchyOpCmplx(Harray[k]);
+     avgwcmpx=avgwcmpx+bcm_AMGHierarchyOpCmplxW(Harray[k]);
      avgcratio=avgcratio+bcm_AMGHierarchyAvgCratio(Harray[k]);
    }
    avgnumlev=avgnumlev/bcm_BootAMGNHrc(boot_amg);
    avgcmpx=avgcmpx/bcm_BootAMGNHrc(boot_amg);
+   avgwcmpx=avgwcmpx/bcm_BootAMGNHrc(boot_amg);
    avgcratio=avgcratio/bcm_BootAMGNHrc(boot_amg);
    printf("Average of number of levels:  %e\n", avgnumlev);
-   printf("Average of operator complexity:  %e\n", avgcmpx);
+   printf("Average of operator complexity for V-cycle:  %e\n", avgcmpx);
+   printf("Average of operator complexity for W-cycle:  %e\n", avgwcmpx);
    printf("Average of coarsening ratio:  %e\n", avgcratio);
    
    /* generate initial vector */

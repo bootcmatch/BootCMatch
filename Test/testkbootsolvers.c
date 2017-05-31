@@ -1,10 +1,10 @@
 /* 
                 BootCMatch 
-     Bootstrap AMG based on Compatible weighted Matching, version 0.9
+     Bootstrap AMG based on Compatible Weighted Matching version 1.0
     (C) Copyright 2017
-                       Pasqua D'Ambra         IAC-CNR, IT
-                       Salvatore Filippone    Cranfield University, UK
-                       Panayot S. Vassilevski Portland State University, OR USA
+                       Pasqua D'Ambra    ICAR-CNR
+                       Salvatore Filippone Cranfield University
+                       Panayot S. Vassilevski CACR-LLNL
  
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -34,37 +34,6 @@
 
 #include "bcm.h"
 #include "ioutil.h"
-// #define DUMP_HIER
-void dump_on_file(const char *prefix, bcm_BootAMG *boot_amg)
-{
-  int j,k;
-  bcm_AMGHierarchy **Harray;
-  Harray=bcm_BootAMGHarray(boot_amg);
-  bcm_CSRMatrix    **A_array;
-  bcm_CSRMatrix    **P_array;
-  bcm_CSRMatrix    **L_array;
-  bcm_CSRMatrix    **U_array;
-  bcm_Vector       **D_array;
-
-  for (k=0; k<1; k++) {
-    A_array           = bcm_AMGHierarchyAArray(Harray[k]);
-    P_array           = bcm_AMGHierarchyPArray(Harray[k]);
-    L_array           = bcm_AMGHierarchyLArray(Harray[k]);
-    U_array           = bcm_AMGHierarchyUArray(Harray[k]);
-    D_array           = bcm_AMGHierarchyDArray(Harray[k]);
-    int num_levels    = bcm_AMGHierarchyNumLevels(Harray[k]);
-    char filename[81];
-    for (j=0; j<num_levels; j++) {
-      sprintf(filename,"%s-P-l%3.3d.mtx",prefix,j);
-      if (P_array[j]!=NULL) bcm_CSRMatrixPrintMM(P_array[j],filename);
-      sprintf(filename,"%s-AC-l%3.3d.mtx",prefix,j);
-      bcm_CSRMatrixPrintMM(A_array[j],filename);
-    }
-
-  }      
-
-}
-
 
 typedef struct {
   int matrixformat;
@@ -277,7 +246,7 @@ int  main(int argc, char *argv[])
 
    /* initialize num_grid_sweeps parameter w.r.t. the number of levels
       and the chosen cycle.
-      We have to manage this in a setup routine after hierarchy building */
+      In the final release we have to manage this in a setup routine after hierarchy building */
    
    num_grid_sweeps = (int *) calloc(inparms.max_levels-1, sizeof(int));
    for(i=0; i<inparms.max_levels-1; i++) num_grid_sweeps[i]=1;
@@ -329,18 +298,23 @@ int  main(int argc, char *argv[])
    printf("Information on the Components\n");
    Harray=bcm_BootAMGHarray(boot_amg);
    double avgcmpx=0;
+   double avgwcmpx=0;
    double avgnumlev=0;
    for(k=0;k<bcm_BootAMGNHrc(boot_amg); k++) {
      printf("Component:  %d\n", k);
      printf("Number of levels:  %d\n", bcm_AMGHierarchyNumLevels(Harray[k]));
-     printf("Operator cmplx %e \n", bcm_AMGHierarchyOpCmplx(Harray[k]));
+     printf("Operator cmplx for V-cycle %e \n", bcm_AMGHierarchyOpCmplx(Harray[k]));
+     printf("Operator cmplx for W-cycle %e \n", bcm_AMGHierarchyOpCmplxW(Harray[k]));
      avgcmpx=avgcmpx+ bcm_AMGHierarchyOpCmplx(Harray[k]);
+     avgwcmpx=avgwcmpx+ bcm_AMGHierarchyOpCmplxW(Harray[k]);
      avgnumlev=avgnumlev+ bcm_AMGHierarchyNumLevels(Harray[k]);
    }
    printf("Wall Clock Time for Building:  %e\n", time2); 
    avgcmpx=avgcmpx/bcm_BootAMGNHrc(boot_amg);
+   avgwcmpx=avgwcmpx/bcm_BootAMGNHrc(boot_amg);
    avgnumlev=avgnumlev/bcm_BootAMGNHrc(boot_amg);
-   printf("AVG cmpx  %e\n", avgcmpx); 
+   printf("AVG cmpx for V-cycle %e\n", avgcmpx); 
+   printf("AVG cmpx for W-cycle %e\n", avgwcmpx); 
    printf("AVG numlev  %e\n", avgnumlev); 
    
    /* generate initial vector */
@@ -358,10 +332,6 @@ int  main(int argc, char *argv[])
    printf("Wall Clock Time for Solving:  %e\n", time2);
    printf("istop=  %d\n", istop);
    printf("itn=  %d\n", itn);
-
-#ifdef DUMP_HIER
-   dump_on_file("BCM-pre-",boot_amg);
-#endif
 
    char *file_out="sol.mtx";
    bcm_VectorPrint(Sol,file_out);
