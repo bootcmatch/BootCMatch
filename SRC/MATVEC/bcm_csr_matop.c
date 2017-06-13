@@ -455,7 +455,7 @@ int bcm_CSRMatrixSort ( bcm_CSRMatrix *A )
  *--------------------------------------------------------------------------*/
 int bcm_SortMatrixRow(int n, int *ja, double *dv)
 {
-  int i,j, ix, jx;
+  int i,j, jx;
   double dx;
 
   for (j=n-2; j>=0; j--) {
@@ -467,7 +467,7 @@ int bcm_SortMatrixRow(int n, int *ja, double *dv)
 	dv[i-1]=dv[i];
 	i++;
 	if (i>=n) break;
-	if (ja[i] >=ix ) break;
+	if (ja[i] >=jx ) break;
       }
       ja[i-1] = jx;
       dv[i-1] = dx;
