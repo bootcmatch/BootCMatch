@@ -67,6 +67,7 @@ bcm_bootpcg(bcm_Vector *x_vector, bcm_Vector *rhs_vector, bcm_BootAMGBuildData *
   num_dofs=bcm_CSRMatrixNumRows(A);
 
   double time1, time2;
+  *timetot=0.0;
 
   /* Create and Initialize Workspaces */
   d_vector= (bcm_Vector **) calloc(2, sizeof(bcm_Vector));
