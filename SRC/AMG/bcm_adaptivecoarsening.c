@@ -130,8 +130,8 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
 	D_tmp[i]=bcm_CSRMatrixDiag(A_tmp[i]);
 	bcm_CSRMatrixDestroy(R);
 	for(k=1; k <= cr_it; ++k) 
-	  bcm_CSRMatrixRelax(A_tmp[k], L_tmp[k],
-			     U_tmp[k], D_tmp[k],
+	  bcm_CSRMatrixRelax(A_tmp[i], L_tmp[i],
+			     U_tmp[i], D_tmp[i],
 			     rhs, cr_relax_type, cr_relax_weight, w_temp1); 
 	bcm_VectorSize(w_temp)=sizecoarse; 
 	bcm_VectorCopy(w_temp1,w_temp);
