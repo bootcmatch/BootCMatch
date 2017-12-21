@@ -105,12 +105,10 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   D_tmp[lev]=bcm_CSRMatrixDiag(A);
   int ierr;
   
-  //fprintf(stderr,"MatchingPairAgg num_sweeps: %d\n",num_sweeps);
   /* cycle for composition of pairwise prolongator to obtain more aggressive coarsening */
   for(i=1; i<=num_sweeps; i++){
     /* build prolongator by pairwise aggregation based on compatible weighted matching */
     ierr=bcm_CSRMatchingPairAgg(A_tmp[i-1],w_temp,&Pagg,match_type);
-    //fprintf(stderr,"From MatchingPairAgg: %d %p\n",ierr,Pagg);
     if (ierr==0) {
 	P_tmp[i-1] = Pagg;
 	bcm_CSRMatrixTranspose(Pagg, &R, 1);
@@ -153,7 +151,6 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   }
   real_num_sweeps=i - 1;
 
-  //fprintf(stderr,"MatchingAgg: cloning P_tmp[0]: %p\n",P_tmp[0]);
   PMM = bcm_CSRMatrixClone(P_tmp[0]);
   if (real_num_sweeps > 1) {
     for (i=1; i< real_num_sweeps; i++) {
@@ -164,16 +161,7 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   }
   *P= PMM;
 
-#if 0
-  bcm_CSRMatrixTranspose(PMM, &R, 1);
-  A_temp=bcm_CSRMatrixMultiply(A,PMM);
-  Ac=bcm_CSRMatrixMultiply(R,A_temp);
-  bcm_CSRMatrixDestroy(A_temp);
-  bcm_CSRMatrixDestroy(R);
-#else
   Ac=bcm_CSRMatrixClone(A_tmp[real_num_sweeps]);
-#endif
-
   A_tmp[0]=NULL;
   for (i=0; i< real_num_sweeps; i++){
     bcm_CSRMatrixDestroy(A_tmp[i]);
@@ -335,8 +323,6 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
 	      wagg0=w_data[i];
 	      wagg1=w_data[j];
 	      normwagg=sqrt(pow(wagg0,2)+pow(wagg1,2));
-//	      using the De-norm
-	      //normwagg=sqrt(D_data[i]*pow(wagg0,2)+D_data[j]*pow(wagg1,2));
 	      if(normwagg > DBL_EPSILON)
 		{
 		  markc[i]=ncolc;
@@ -480,7 +466,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   L_array[lev]=bcm_CSRMatrixTriL(A,1);
   U_array[lev]=bcm_CSRMatrixTriU(A,1);
   D_array[lev]=bcm_CSRMatrixDiag(A);
-  //fprintf(stderr,"1: U_array[0]: %p\n",U_array[0]);
 
 
   /* Because of this initialization, and since MatrixDestroy
@@ -567,12 +552,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   bcm_VectorDestroy(rhs); 
   bcm_VectorDestroy(w_temp); 
   bcm_VectorDestroy(w_temp1); 
-
-  /* combine (by matrix multiplication) consecutive prolongators for more aggressive coarsening  */
-  time1=time_getWallclockSeconds();
-
-  time2=time_getWallclockSeconds()-time1;
-  printf("Time for sweeps on pairwise aggregates:  %e\n", time2);
 
   /* apply one sweep of a weighted-Jacobi smoother to the prolongators
    * for smoothed-type aggregation */

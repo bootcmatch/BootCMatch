@@ -100,32 +100,29 @@ bcm_CSRMatrixAhat( bcm_CSRMatrix *A,
 
            /* new weights coming from D-orthogonality condition */
 
-	  if(irow != icol)
-	  {
-	      wedge0=w_data[irow];
-	      wedge1=w_data[icol];
+	  wedge0=w_data[irow];
+	  wedge1=w_data[icol];
 
-             for(i=A_i[irow]; i<A_i[irow+1]; i++)
-             {
-               if(A_j[i]==irow) Aedge11=A_data[i];
-               else if(A_j[i]==icol) Aedge12=A_data[i];
-             }
-             for(i=A_i[icol]; i<A_i[icol+1]; i++)
-             {
-               if(A_j[i]==icol) Aedge22=A_data[i];
-             }
-	     normwedge=Aedge11*pow(wedge0,2)+Aedge22*pow(wedge1,2);
-	     if(normwedge > DBL_EPSILON)
-             {
-	        AH_data[nnz_AH]=1.0-((2.0*wedge0*wedge1*Aedge12)/normwedge);
-	        nnz_AH++;
-             }
-	     else
-	     {
-	       AH_data[nnz_AH]=DBL_EPSILON;
-	       nnz_AH++;
-             }
-	  } 
+          for(i=A_i[irow]; i<A_i[irow+1]; i++)
+          {
+            if(A_j[i]==irow) Aedge11=A_data[i];
+            else if(A_j[i]==icol) Aedge12=A_data[i];
+          }
+          for(i=A_i[icol]; i<A_i[icol+1]; i++)
+          {
+            if(A_j[i]==icol) Aedge22=A_data[i];
+          }
+	  normwedge=Aedge11*pow(wedge0,2)+Aedge22*pow(wedge1,2);
+	  if(normwedge > DBL_EPSILON)
+          {
+	    AH_data[nnz_AH]=1.0-((2.0*wedge0*wedge1*Aedge12)/normwedge);
+	    nnz_AH++;
+          }
+	  else
+	  {
+	   AH_data[nnz_AH]=DBL_EPSILON;
+	   nnz_AH++;
+          }
 /* end of computation of new weights */
 
 /* computation of old weights (standard L2 orthogonality condition) */

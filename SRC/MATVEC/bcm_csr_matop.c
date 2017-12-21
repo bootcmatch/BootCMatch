@@ -244,7 +244,7 @@ bcm_CSRMatrixMultiply( bcm_CSRMatrix *A,
 	 }
      }
    free(B_marker);
-   //bcm_CSRMatrixSort(C);
+   bcm_CSRMatrixSort(C);
    return C;
 }	
 
