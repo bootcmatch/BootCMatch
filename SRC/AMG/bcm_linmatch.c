@@ -77,7 +77,7 @@ int * bcm_CSRMatrixHMatch( bcm_CSRMatrix *B )
   /*prepare weight matrix for maximum product matching */
 
   /* I am working on B transpose since I need max along column of B 
-     so in CSR format is better working per row                                 */
+-     so in CSR format is better working per row                                 */
 
   c = (double *) calloc(nrows_BT, sizeof(double));
 
@@ -129,7 +129,7 @@ int * bcm_CSRMatrixHMatch( bcm_CSRMatrix *B )
       for(j=W_i[i]; j<W_i[i+1]; ++j)
 	{
 	  /* As in Duff paper */
-	            //if(fabs(B_data[j])>0.) W_data[j]=log(c[B_j[j]])-log(fabs(B_data[j]));
+	            //if(fabs(B_data[j])>0.) W_data[j]=-log(c[B_j[j]])+log(fabs(B_data[j]));
 		     // else W_data[j]=FLT_MAX; 
 	  /* As in Scott paper for maximum cardinality */
 	  // if(fabs(B_data[j])>0.) W_data[j]=alpha+log(fabs(B_data[j]))+(alpha-c[B_j[j]]);
