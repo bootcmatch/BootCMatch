@@ -3,7 +3,6 @@
      Bootstrap AMG based on Compatible weighted Matching version 0.9
     (C) Copyright 2017
                        Pasqua D'Ambra    IAC-CNR
-                       Salvatore Filippone Cranfield University
                        Panayot S. Vassilevski CACR-LLNL
 
   Redistribution and use in source and binary forms, with or without
