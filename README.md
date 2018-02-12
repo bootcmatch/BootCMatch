@@ -26,7 +26,13 @@ To see the software in action we provide three test programs:
 
 At this time, you will have to edit the make.inc file by hand to suit your computing environment. 
 
-For questions, please send an email to pasqua.dambra@cnr.it or salvatore.filippone@cranfield.ac.uk 
+Contributors for version 0.9:
+       Salvatore Filippone. 
+
+For questions, please send an email to pasqua.dambra@cnr.it or open an
+issue on out Git page: https://github.com/bootcmatch/BootCMatch
 
 This project was partially supported by the NSF under award DMS-1619640.
-This project was partially supported  by the EC under the Horizon 2020 Project: *Energy oriented Centre of Excellence for computing applications EoCoE*, Project ID: 676629.
+This project was partially supported  by the EC under the Horizon 2020
+Project: *Energy oriented Centre of Excellence for computing
+applications EoCoE*, Project ID: 676629. 
