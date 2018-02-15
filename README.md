@@ -2,9 +2,9 @@
 Welcome to BootCMatch:
 >     Bootstrap AMG based on Compatible weighted Matching, version 0.9.
 
-Pasqua D'Ambra, Institute for Applied Computing (IAC) of the Italian National Research Council (CNR)
+Pasqua D'Ambra, Institute for Applied Computing (IAC) of the Italian National Research Council (CNR), Italy
 
-Panayot S. Vassilevski, Portland State University
+Panayot S. Vassilevski, Portland State University, OR USA
 
 This is the software package described in the paper:
 
