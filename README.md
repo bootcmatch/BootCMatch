@@ -4,11 +4,11 @@ Welcome to BootCMatch:
 
 Pasqua D'Ambra, Institute for Applied Computing (IAC) of the Italian National Research Council (CNR)
 
-Panayot Vassilevski, Portland State University
+Panayot S. Vassilevski, Portland State University
 
 This is the software package described in the paper:
 
-P. D'Ambra, S. Filippone, P. Vassilevski: *BootCMatch: a software package for bootstrap AMG based on graph weighted matching,*
+P. D'Ambra, S. Filippone, P. S. Vassilevski: *BootCMatch: a software package for bootstrap AMG based on graph weighted matching,*
 submitted, 2017
 
 It contains the following components: 
