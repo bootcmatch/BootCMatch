@@ -8,8 +8,7 @@ Panayot S. Vassilevski, Portland State University, OR USA
 
 This is the software package described in the paper:
 
-P. D'Ambra, S. Filippone, P. S. Vassilevski: *BootCMatch: a software package for bootstrap AMG based on graph weighted matching,*
-submitted, 2017
+P. D'Ambra, S. Filippone, P. S. Vassilevski: *BootCMatch: a software package for bootstrap AMG based on graph weighted matching,* accepted for publication on ACM Transactions on Mathematical Software, 2017
 
 It contains the following components: 
 1. A set of algorithms for building AMG hierarchies
