@@ -78,7 +78,9 @@ int * bcm_CSRMatrixHMatch( bcm_CSRMatrix *B )
   /* I am working on B transpose since I need max along column of B 
 -     so in CSR format is better working per row                                 */
 
-  c = (double *) calloc(nrows_BT, sizeof(double));
+/*  needed for Duff and Scott transformation 
+ 
+    c = (double *) calloc(nrows_BT, sizeof(double));
 
   for(i=0; i<nrows_BT; i++) c[i]=-DBL_MIN;
   for(i=0; i<nrows_BT; ++i) 
@@ -104,7 +106,7 @@ int * bcm_CSRMatrixHMatch( bcm_CSRMatrix *B )
 	      if(tmp > alpha) alpha=tmp;
 	    }
 	}
-    } 
+    } */ 
 
   bcm_CSRMatrix * W= bcm_CSRMatrixCloneStruct(B);
 
