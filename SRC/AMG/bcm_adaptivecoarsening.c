@@ -64,9 +64,9 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   bcm_CSRMatrix *A_temp,At, **A_tmp, **P_tmp,*P_temp , **L_tmp, **U_tmp, *R, *Ac, *PMM, *Pagg;
   bcm_Vector **D_tmp;
   bcm_Vector  *w_temp, *w_temp1, *rhs;
-  int normw;
   int lev, i, sizecoarse, k, real_num_sweeps, nsize_w, nsize_A;
   double coarseratio;
+  double timematching;
 
   bcm_AMGHierarchy *amg_hierarchy_tmp; /* aux Hierarchy */
 
@@ -88,7 +88,6 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   amg_hierarchy_tmp= bcm_AMGHierarchyCreate(num_sweeps+1);
   bcm_AMGHierarchyInitialize(amg_hierarchy_tmp);
 
-  normw=bcm_VectorANorm(A,w_temp);
   lev=0;
   sizecoarse=nsize_A;
   A_tmp= bcm_AMGHierarchyAArray(amg_hierarchy_tmp); 
@@ -104,6 +103,7 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   D_tmp[lev]=bcm_CSRMatrixDiag(A);
   int ierr;
   
+  timematching=time_getWallclockSeconds();
   /* cycle for composition of pairwise prolongator to obtain more aggressive coarsening */
   for(i=1; i<=num_sweeps; i++){
     /* build prolongator by pairwise aggregation based on compatible weighted matching */
@@ -149,6 +149,8 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
     } 
   }
   real_num_sweeps=i - 1;
+  timematching=time_getWallclockSeconds()-timematching;
+  printf("Time for aggregation sweeps:  %e\n", timematching);
 
   PMM = bcm_CSRMatrixClone(P_tmp[0]);
   if (real_num_sweeps > 1) {
@@ -339,13 +341,7 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
     {
       if(markc[i]==-1)
 	{
-	  if(fabs(w_data[i]) <= DBL_EPSILON)
-	    {
-	      /* only-fine grid node: corresponding null row in the prolongator */
-	      markc[i]=ncolc-1;
-	      wtempc[i]=0.0;
-	    }
-	  else
+	  if(fabs(w_data[i]) > DBL_EPSILON)
 	    {
 	      markc[i]=ncolc;
 	      ncolc++;
@@ -354,7 +350,6 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
 	    }
 	}
     }
-
 
   int ncoarse=npairs+nsingle;
 
@@ -411,6 +406,7 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   double dlamch_(char *cmach);
   double  normw, normold, normnew, ratioAc;
   double coarseratio=2.0, avcoarseratio=0.0;
+  double timeaggr;
 
   bcm_CSRMatrix **A_array, **P_array, **L_array, **U_array ;
   bcm_Vector **D_array;
@@ -486,10 +482,8 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
 
   int match_type=bcm_AMGBuildDataAggMatchType(amg_data);
 
-  double timematching, timematchingtot;
   double time1=time_getWallclockSeconds();
   int ftcoarse=1;
-  timematchingtot=0.0;
   int real_num_sweeps;
   int ierr;
 
@@ -525,6 +519,7 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   }  
   cmplxfinal=cmplxfinal/bcm_CSRMatrixNumNonzeros(A);
   bcm_AMGHierarchyOpCmplx(amg_hierarchy)=cmplxfinal;
+
   wcmplxfinal=bcm_CSRMatrixNumNonzeros(A);
   for(i=1; i< lev; i++){
     wcmplxfinal += pow(2,i)*bcm_CSRMatrixNumNonzeros(A_array[i]); 
@@ -539,7 +534,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   double time2=time_getWallclockSeconds()-time1;
 
   printf("Time for coarsening:  %e\n", time2);
-  printf("Time for aggregation:  %e\n", timematchingtot);
 
   /* free unused memory */
   for(i=lev; i<max_levels; i++) bcm_CSRMatrixDestroy(P_array[i]);
@@ -559,16 +553,13 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   if(bcm_AMGBuildDataAggInterpType(amg_data))
     {
       int nsize, nnzatemp;
-      bcm_Vector *Adiag;
       double *Atemp_data, omega=0.0;
       int *Atemp_i, *Atemp_j;
       for(j=0; j<lev-1; j++)
 	{
 	  nsize=bcm_CSRMatrixNumRows(A_array[j]);
 
-	  Adiag=bcm_CSRMatrixDiag(A_array[j]);
-
-	  A_temp=bcm_CSRMatrixDiagScal(A_array[j],Adiag);
+	  A_temp=bcm_CSRMatrixDiagScal(A_array[j],D_array[j]);
 	  omega=4.0/(3.0*bcm_CSRMatrixInfNorm(A_temp));
 
 	  nnzatemp=bcm_CSRMatrixNumNonzeros(A_temp);
@@ -606,7 +597,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
 
 	  bcm_CSRMatrixDestroy(R); 
 	  bcm_CSRMatrixDestroy(A_temp);
-	  bcm_VectorDestroy(Adiag);
 	}
          cmplxsmoothed=bcm_CSRMatrixNumNonzeros(A);
          for(i=1; i< lev; i++){
