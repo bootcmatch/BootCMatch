@@ -175,7 +175,7 @@ int * bcm_CSRMatrixHMatch( bcm_CSRMatrix *B )
   bcm_CSRMatrixDestroy(W);
   free(jrowindex);
   free(jjrowindex);
-  free(c);
+  /* free(c); */
   
   return rmatch;
 }
