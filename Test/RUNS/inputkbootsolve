@@ -6,13 +6,13 @@ NONE                % sol file NONE if not present
 1                   % max_hrc, in bootstrap AMG, max hierarchies; NB: Here put 1 for single AMG component
 0.6                 % desired convergence rate of the composite AMG; NB: This is not generally obtained if criterion on max_hrc is reached
 2                   % matchtype: 0, Preis; 1 HSL-mc64; 2 Spral-Auction
-0                   % aggrsweeps; passi di aggregazione a coppie. 0, pairs; 1 double pairs ...
-0                   %aggr_type; 0 unsmoothed, 1 smoothed 
-39                  %max_levels; max number of levels built for the single hierarchy
-3                   %cycle_type: 0-Vcycle, 1-Hcycle, 2-Wcycle, 3-Kcycle 
-9                   %coarse_solver: 9  SuperLU 
-1                   %relax_type: 0 Jacobi, 1 FGS/BGS, 3 symmetrized GS, 4 L1-smoother
-2                   %prerelax_sweeps
-2                   %postrelax_sweeps
-1000                %itnlim
-1.e-6               %rtol
+0                   % aggrsweeps; 0, aggregates are pairs; 1 aggregates are double pairs ...
+0                   % aggr_type; 0 unsmoothed, 1 smoothed 
+39                  % max_levels; max number of levels built for the single hierarchy
+3                   % cycle_type: 0-Vcycle, 1-Hcycle, 2-Wcycle, 3-Kcycle 
+9                   % coarse_solver: 9  SuperLU, 0 Jacobi, 1 FGS/BGS, 3 symmetrized GS 
+1                   % relax_type: 0 Jacobi, 1 FGS/BGS, 3 symmetrized GS
+2                   % prerelax_sweeps
+2                   % postrelax_sweeps
+1000                % itnlim
+1.e-6               % rtol
