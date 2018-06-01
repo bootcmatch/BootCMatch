@@ -1,9 +1,9 @@
 /*
                 BootCMatch
-     Bootstrap AMG based on Compatible weighted Matching version 0.9
+     Bootstrap AMG based on Compatible Matching version 0.9
     (C) Copyright 2017
                        Pasqua D'Ambra    IAC-CNR
-                       Panayot S. Vassilevski Portland State University, OR USA
+                       Panayot S. Vassilevski Portland State University, OR, USA
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -102,12 +102,14 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   U_tmp[lev]=bcm_CSRMatrixTriU(A,1);
   D_tmp[lev]=bcm_CSRMatrixDiag(A);
   int ierr;
-  
-  timematching=time_getWallclockSeconds();
+
+  timematching=time_getWallclockSeconds(); 
+  //fprintf(stderr,"MatchingPairAgg num_sweeps: %d\n",num_sweeps);
   /* cycle for composition of pairwise prolongator to obtain more aggressive coarsening */
   for(i=1; i<=num_sweeps; i++){
     /* build prolongator by pairwise aggregation based on compatible weighted matching */
     ierr=bcm_CSRMatchingPairAgg(A_tmp[i-1],w_temp,&Pagg,match_type);
+    //fprintf(stderr,"From MatchingPairAgg: %d %p\n",ierr,Pagg);
     if (ierr==0) {
 	P_tmp[i-1] = Pagg;
 	bcm_CSRMatrixTranspose(Pagg, &R, 1);
@@ -163,6 +165,7 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   *P= PMM;
 
   Ac=bcm_CSRMatrixClone(A_tmp[real_num_sweeps]);
+
   A_tmp[0]=NULL;
   for (i=0; i< real_num_sweeps; i++){
     bcm_CSRMatrixDestroy(A_tmp[i]);
@@ -214,6 +217,7 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
   int *p;
   int nrows_A = bcm_CSRMatrixNumRows(A);
   assert(nrows_A == sizew);
+
 
   /* build matrix Ahat from A */
 
@@ -292,7 +296,7 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
     free(cscaling);      
     break;
 #endif
-  /* call function for half-approximate matching */
+  /* call function for half-approximate matching based on Preis algorithm*/
   case MATCH_PREIS:
     /* Fall through the default*/;
     fprintf(stderr,"Calling PREIS matching\n");
@@ -303,15 +307,11 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
     return(-1);
   }
 
-/* needed for new De-norm */
-/*  bcm_Vector *D;
-  D=bcm_CSRMatrixDiag(A);
-  double *D_data=bcm_VectorData(D); */
-
   markc = (int *) calloc(nrows_A, sizeof(int));
   for(i=0; i<nrows_A; ++i) markc[i]=-1;
 
   wtempc = (double *) calloc(nrows_A, sizeof(double));
+
 
   for(i=0; i<nrows_A; ++i)
     {
@@ -324,6 +324,8 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
 	      wagg0=w_data[i];
 	      wagg1=w_data[j];
 	      normwagg=sqrt(pow(wagg0,2)+pow(wagg1,2));
+//	      using the De-norm
+	      //normwagg=sqrt(D_data[i]*pow(wagg0,2)+D_data[j]*pow(wagg1,2));
 	      if(normwagg > DBL_EPSILON)
 		{
 		  markc[i]=ncolc;
@@ -341,7 +343,13 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
     {
       if(markc[i]==-1)
 	{
-	  if(fabs(w_data[i]) > DBL_EPSILON)
+	  if(fabs(w_data[i]) <= DBL_EPSILON)
+	    {
+	      /* only-fine grid node: corresponding null row in the prolongator */
+	      markc[i]=ncolc-1;
+	      wtempc[i]=0.0;
+	    }
+	  else
 	    {
 	      markc[i]=ncolc;
 	      ncolc++;
@@ -350,6 +358,7 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
 	    }
 	}
     }
+
 
   int ncoarse=npairs+nsingle;
 
@@ -401,12 +410,11 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   double wcmplxfinal, wcmplxsmoothed;
   bcm_Vector *rhs;
   int cr_relax_type, cr_it,  coarse_solver;
-  double cr_relax_weight, cr_ratio;
+  double cr_relax_weight;
   int i, lev, sizecoarse, max_levels, max_sizecoarse, j, k;
   double dlamch_(char *cmach);
   double  normw, normold, normnew, ratioAc;
   double coarseratio=2.0, avcoarseratio=0.0;
-  double timeaggr;
 
   bcm_CSRMatrix **A_array, **P_array, **L_array, **U_array ;
   bcm_Vector **D_array;
@@ -429,7 +437,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   max_levels      = bcm_AMGBuildDataMaxLevels(amg_data);
   max_sizecoarse  = bcm_AMGBuildDataMaxCoarseSize(amg_data);
   coarse_solver   = bcm_AMGBuildDataCoarseSolver(amg_data);
-  cr_ratio        = bcm_AMGBuildDataCRratio(amg_data);
 
   /* initialize rhs vector for relaxations on homegeneous systems */
   rhs=bcm_VectorCreate(nsize_w);
@@ -461,6 +468,7 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   L_array[lev]=bcm_CSRMatrixTriL(A,1);
   U_array[lev]=bcm_CSRMatrixTriU(A,1);
   D_array[lev]=bcm_CSRMatrixDiag(A);
+  //fprintf(stderr,"1: U_array[0]: %p\n",U_array[0]);
 
 
   /* Because of this initialization, and since MatrixDestroy
@@ -480,8 +488,12 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
     bcm_CSRMatrixRelax(A_array[0], L_array[0], U_array[0], D_array[0],rhs,
 		       cr_relax_type, cr_relax_weight, w_temp);
 
+  cmplxsmoothed=bcm_CSRMatrixNumNonzeros(A);
+  wcmplxsmoothed=bcm_CSRMatrixNumNonzeros(A);
+
   int match_type=bcm_AMGBuildDataAggMatchType(amg_data);
 
+  double timematching;
   double time1=time_getWallclockSeconds();
   int ftcoarse=1;
   int real_num_sweeps;
@@ -491,7 +503,7 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   if (normw > DBL_EPSILON)   {
     j = 1;
     while(lev < max_levels && sizecoarse>ftcoarse*max_sizecoarse)  {
-      
+
       A_array[j]=bcm_CSRMatchingAgg(A_array[j-1],&w_temp,&P,match_type, 
 				    num_sweeps, max_sizecoarse, max_levels, &ftcoarse,
 				    cr_it, cr_relax_type, cr_relax_weight);
@@ -611,7 +623,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
           }  
           wcmplxfinal=wcmplxfinal/bcm_CSRMatrixNumNonzeros(A);
           bcm_AMGHierarchyOpCmplxW(amg_hierarchy)=wcmplxfinal;
-
     } 
 
   time2=time_getWallclockSeconds()-time1;
