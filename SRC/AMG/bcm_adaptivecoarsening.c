@@ -109,7 +109,7 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   int ierr;
   
   //fprintf(stderr,"MatchingPairAgg num_sweeps: %d match_type %d max_sizecoarse %d max_levels %d\n",
-	  num_sweeps,match_type,max_sizecoarse,max_levels);
+  // num_sweeps,match_type,max_sizecoarse,max_levels);
   /* cycle for composition of pairwise prolongator to obtain more aggressive coarsening */
   for(i=1; i<=num_sweeps; i++){
     /* build prolongator by pairwise aggregation based on compatible weighted matching */
