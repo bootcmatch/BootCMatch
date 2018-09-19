@@ -1,9 +1,10 @@
 /*
                 BootCMatch
-     Bootstrap AMG based on Compatible weighted Matching, version 0.9
+     Bootstrap AMG based on Compatible Matching version 1.0
     (C) Copyright 2017
-                       Pasqua D'Ambra         IAC-CNR, IT
-                       Panayot S. Vassilevski Portland State University, OR USA
+                       Pasqua D'Ambra    ICAR-CNR
+                       Salvatore Filippone Cranfield University
+                       Panayot S. Vassilevski CACR-LLNL
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -220,6 +221,21 @@ bcm_VectorPrint( bcm_Vector *vector,
 {
   FILE    *fp;
 
+  int ierr=0;
+
+  fp = fopen(file_name, "w");
+  bcm_VectorPrintfp(vector,fp)  ;
+  fclose(fp);
+
+  return ierr;
+}
+
+
+int
+bcm_VectorPrintfp( bcm_Vector *vector,
+		   FILE    *fp)
+{
+
   double  *data;
   int      size;
    
@@ -234,7 +250,6 @@ bcm_VectorPrint( bcm_Vector *vector,
   data = bcm_VectorData(vector);
   size = bcm_VectorSize(vector);
 
-  fp = fopen(file_name, "w");
 
       fprintf(fp, "%d\n", size);
 
@@ -243,7 +258,6 @@ bcm_VectorPrint( bcm_Vector *vector,
 	  fprintf(fp, "%.14e\n", data[i]);
 	}
 
-  fclose(fp);
 
   return ierr;
 }

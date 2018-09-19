@@ -1,9 +1,10 @@
 /* 
                 BootCMatch 
-     Bootstrap AMG based on Compatible weighted Matching version 0.9
+     Bootstrap AMG based on Compatible Matching version 1.0
     (C) Copyright 2017
-                       Pasqua D'Ambra         IAC-CNR, IT
-                       Panayot S. Vassilevski Portland State University, OR USA
+                       Pasqua D'Ambra    ICAR-CNR
+                       Salvatore Filippone Cranfield University
+                       Panayot S. Vassilevski CACR-LLNL
  
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -131,6 +132,7 @@ bcm_CSRMatrix *bcm_MM2CSRMatrixRead( char *file_name );
 int bcm_CSRMatrixPrint ( bcm_CSRMatrix *matrix , char *file_name );
 int bcm_CSRMatrixPrintHB ( bcm_CSRMatrix *matrix_input , char *file_name );
 int bcm_CSRMatrixPrintMM( bcm_CSRMatrix *matrix, char            *file_name );
+int bcm_CSRMatrixPrintMMfp( bcm_CSRMatrix *matrix, FILE *fp );
 int bcm_CSRMatrixCopy ( bcm_CSRMatrix *A , bcm_CSRMatrix *B , int copy_data );
 bcm_CSRMatrix * bcm_CSRMatrixCloneStruct ( bcm_CSRMatrix *A );
 bcm_CSRMatrix * bcm_CSRMatrixClone ( bcm_CSRMatrix *A );
@@ -152,6 +154,7 @@ int bcm_VectorInitialize ( bcm_Vector *vector );
 bcm_Vector *bcm_VectorRead ( char *file_name );
 bcm_Vector *bcm_VectorMMRead ( char *file_name );
 int bcm_VectorPrint ( bcm_Vector *vector , char *file_name );
+int bcm_VectorPrintfp ( bcm_Vector *vector , FILE *fp );
 int bcm_VectorSetConstantValues ( bcm_Vector *v , double value );
 int bcm_VectorSetRandomValues ( bcm_Vector *v , int seed );
 int bcm_VectorCopy ( bcm_Vector *x , bcm_Vector *y );

@@ -1,9 +1,10 @@
 /*
                 BootCMatch
-     Bootstrap AMG based on Compatible weighted Matching, version 0.9
+     Bootstrap AMG based on Compatible Matching version 1.0
     (C) Copyright 2017
-                       Pasqua D'Ambra         IAC-CNR, IT
-                       Panayot S. Vassilevski Portland State University, OR USA
+                       Pasqua D'Ambra    ICAR-CNR
+                       Salvatore Filippone Cranfield University
+                       Panayot S. Vassilevski CACR-LLNL
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions
@@ -268,6 +269,30 @@ bcm_CSRMatrixPrintMM( bcm_CSRMatrix *matrix,
 {
   FILE    *fp;
 
+  int      ierr = 0;
+
+  /*----------------------------------------------------------
+   * Print the matrix data
+   *----------------------------------------------------------*/
+
+  if (matrix == NULL) {
+    fprintf(stderr,"Why do you want me to print a NULL matrix?\n");
+    return(1);
+  }
+    
+
+  fp = fopen(file_name, "w");
+  ierr=bcm_CSRMatrixPrintMMfp(matrix,fp);
+
+  fclose(fp);
+
+  return ierr;
+}
+
+int
+bcm_CSRMatrixPrintMMfp( bcm_CSRMatrix *matrix,  FILE    *fp)
+{
+
   double  *matrix_data;
   int     *matrix_i;
   int     *matrix_j;
@@ -296,7 +321,6 @@ bcm_CSRMatrixPrintMM( bcm_CSRMatrix *matrix,
   num_cols    = bcm_CSRMatrixNumCols(matrix);
   nnz         = bcm_CSRMatrixNumNonzeros(matrix);
 
-  fp = fopen(file_name, "w");
   fprintf(fp,"%s\n","%%MatrixMarket matrix coordinate real general");
 
   fprintf(fp, "%d  %d %d \n", num_rows, num_cols, nnz);
@@ -307,7 +331,6 @@ bcm_CSRMatrixPrintMM( bcm_CSRMatrix *matrix,
     }
   }
 
-  fclose(fp);
 
   return ierr;
 }
