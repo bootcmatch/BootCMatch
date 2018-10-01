@@ -76,7 +76,7 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   rhs=bcm_VectorCreate(nsize_w);
   bcm_VectorInitialize(rhs);
 
-  //bcm_CSRMatrixSort(A);
+  bcm_CSRMatrixSort(A);
   //bcm_CSRMatrixPrintMMfp(A,stderr);
   //bcm_VectorPrintfp(*w,stderr);
   /* initialize wtemp for restriction of the current smooth vector at each level */
@@ -168,7 +168,7 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
     }
   }
   *P= PMM;
- // bcm_CSRMatrixPrintMMfp(*P,stderr);
+  //bcm_CSRMatrixPrintMMfp(*P,stderr);
 #if 0
   bcm_CSRMatrixTranspose(PMM, &R, 1);
   A_temp=bcm_CSRMatrixMultiply(A,PMM);
@@ -178,6 +178,7 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
 #else
   Ac=bcm_CSRMatrixClone(A_tmp[real_num_sweeps]);
 #endif
+  //bcm_CSRMatrixPrintMMfp(Ac,stderr);
 
   A_tmp[0]=NULL;
   for (i=0; i< real_num_sweeps; i++){
