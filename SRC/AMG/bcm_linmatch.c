@@ -53,8 +53,6 @@ int * bcm_CSRMatrixHMatch( bcm_CSRMatrix *B )
   int rno, cno, nzrows_cno, startj, ljrowindex, ljjrowindex;
   int *jrowindex, *jjrowindex;
 
-  bcm_CSRMatrix *BT; 
-
   int     *B_i = bcm_CSRMatrixI(B);
   int     *B_j = bcm_CSRMatrixJ(B);
   double  *B_data = bcm_CSRMatrixData(B);
@@ -63,82 +61,6 @@ int * bcm_CSRMatrixHMatch( bcm_CSRMatrix *B )
   int  nnz_B  =  bcm_CSRMatrixNumNonzeros(B);
 
   assert(nrows_B==ncols_B);
-
-  bcm_CSRMatrixTranspose ( B , &BT , 1); 
-
-  int     *BT_i = bcm_CSRMatrixI(BT);
-  int     *BT_j = bcm_CSRMatrixJ(BT);
-  double  *BT_data = bcm_CSRMatrixData(BT);
-  int  nrows_BT  =  bcm_CSRMatrixNumRows(BT); 
-
-  nzrows_B=B_i[1]-B_i[0];
-
-  /*prepare weight matrix for maximum product matching */
-
-  /* I am working on B transpose since I need max along column of B 
--     so in CSR format is better working per row                                 */
-
-/*  needed for Duff and Scott transformation 
- 
-    c = (double *) calloc(nrows_BT, sizeof(double));
-
-  for(i=0; i<nrows_BT; i++) c[i]=-DBL_MIN;
-  for(i=0; i<nrows_BT; ++i) 
-    {
-      for(j=BT_i[i]; j<BT_i[i+1]; ++j) 
-	{
-	  if(fabs(BT_data[j]) > 0.) 
-	    {
-	      tmp=log(fabs(BT_data[j]));
-	      if(tmp >c[i]) c[i]=tmp;
-	    }
-	}
-    }
-
-  alpha=-DBL_MIN;
-  for(i=0; i< nrows_BT; ++i)
-    {
-      for(j=BT_i[i]; j<BT_i[i+1]; j++)
-	{
-	  if(fabs(BT_data[j]) > 0.) 
-	    {
-	      tmp=c[i]-log(fabs(BT_data[j]));
-	      if(tmp > alpha) alpha=tmp;
-	    }
-	}
-    } */ 
-
-  bcm_CSRMatrix * W= bcm_CSRMatrixCloneStruct(B);
-
-  int     *W_i = bcm_CSRMatrixI(W);
-  int     *W_j = bcm_CSRMatrixJ(W);
-  int  nrows_W  =  bcm_CSRMatrixNumRows(W);
-  double  *W_data=bcm_CSRMatrixData(W);
-
-  /* needed for computing weights as in Bora code */
-
-  double min_B=fabs(B_data[0]);
-  for(i=1; i<nnz_B; i++)
-    {
-      if(min_B > fabs(B_data[i])) min_B=fabs(B_data[i]);
-    } 
-
-  /* end of weights as in Bora code */
-
-  for(i=0; i< nrows_W; ++i)
-    {
-      for(j=W_i[i]; j<W_i[i+1]; ++j)
-	{
-	  /* As in Duff paper */
-	            //if(fabs(B_data[j])>0.) W_data[j]=-log(c[B_j[j]])+log(fabs(B_data[j]));
-		     // else W_data[j]=FLT_MAX; 
-	  /* As in Scott paper for maximum cardinality */
-	  // if(fabs(B_data[j])>0.) W_data[j]=alpha+log(fabs(B_data[j]))+(alpha-c[B_j[j]]);
-	  //   else W_data[j]=FLT_MAX; 
-	  /* As Bora code */
-	  W_data[j]=log(fabs(B_data[j])/(0.999*min_B));  /* This seems to be generally better */
-	}
-    }
 
   rmatch = (int *) calloc(nrows_B, sizeof(int));
 
@@ -164,18 +86,15 @@ int * bcm_CSRMatrixHMatch( bcm_CSRMatrix *B )
 	  for(k=0; k<nzrows_cno; ++k) jjrowindex[k]=B_j[startj+k];
 
 	  if(rmatch[rno] == -1 && rmatch[cno] == -1)
-	    bcm_trymatch(rno,cno,W,jrowindex,nzrows_B,jjrowindex,nzrows_cno,rmatch);
+	    bcm_trymatch(rno,cno,B,jrowindex,nzrows_B,jjrowindex,nzrows_cno,rmatch);
         
 	}
 
       jbp=jbp+nzrows_B;
     }
    
-  bcm_CSRMatrixDestroy(BT);
-  bcm_CSRMatrixDestroy(W);
   free(jrowindex);
   free(jjrowindex);
-  /* free(c); */
   
   return rmatch;
 }

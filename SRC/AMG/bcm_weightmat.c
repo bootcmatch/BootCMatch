@@ -34,7 +34,7 @@
 #include "bcm_matvec.h"
 
 /*----------------------------------------------------------------------------
- * bcm_CSRMatrixAhat computes the matrix Ahat to which apply the weighted matching 
+ * bcm_CSRMatrixAhat computes the matrix Ahat (and its logarithmic transformation) to which apply the weighted matching 
  * starting from A and w. 
  * Matrix A is considered s.p.d. (symmetric with nonzero diagonal entries is sufficient)
  * However, we can also modify it for working on unsymmetric matrices.
@@ -173,8 +173,29 @@ bcm_CSRMatrixAhat( bcm_CSRMatrix *A,
     AH_i[nrows_B]=B_i[nrows_B];
 
     assert(nnz_AH==nnz_B);
+
+  /*prepare weight matrix for maximum product matching */
+
+
+  bcm_CSRMatrix * W= bcm_CSRMatrixCloneStruct(AH);
+
+  int     *W_i = bcm_CSRMatrixI(W);
+  int     *W_j = bcm_CSRMatrixJ(W);
+  int  nnz_W  =  bcm_CSRMatrixNumNonzeros(W);
+  double  *W_data=bcm_CSRMatrixData(W);
+
+  /* needed for computing weights as in Bora code */
+
+  double min_AH=fabs(AH_data[0]);
+  for(i=1; i<nnz_AH; i++)
+    {
+      if(min_AH > fabs(AH_data[i])) min_AH=fabs(AH_data[i]);
+    } 
+
+   for(i=1; i<nnz_W; i++) W_data[i]=log(fabs(AH_data[i])/(0.999*min_AH));  /* This seems to be generally good */
    
     bcm_CSRMatrixDestroy(B);
+    bcm_CSRMatrixDestroy(AH);
 
-    return AH;
+    return W;
 }
