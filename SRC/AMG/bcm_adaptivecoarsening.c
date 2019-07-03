@@ -63,7 +63,7 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
 				   int cr_it, int cr_relax_type, double cr_relax_weight)
 { 
   bcm_CSRMatrix *A_temp,At, **A_tmp, **P_tmp,*P_temp , **L_tmp, **U_tmp, *R, *Ac, *PMM, *Pagg;
-  bcm_Vector **D_tmp, **M_tmp;
+  bcm_Vector **D_tmp;
   bcm_Vector  *w_temp, *w_temp1, *rhs;
   int lev, i, sizecoarse, k, real_num_sweeps, nsize_w, nsize_A;
   double coarseratio;
@@ -97,14 +97,12 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
   L_tmp= bcm_AMGHierarchyLArray(amg_hierarchy_tmp);
   U_tmp= bcm_AMGHierarchyUArray(amg_hierarchy_tmp);
   D_tmp= bcm_AMGHierarchyDArray(amg_hierarchy_tmp);
-  M_tmp= bcm_AMGHierarchyMArray(amg_hierarchy_tmp);
 
   At=*A;
   A_tmp[lev]=&At;
   L_tmp[lev]=bcm_CSRMatrixTriL(A,1);
   U_tmp[lev]=bcm_CSRMatrixTriU(A,1);
   D_tmp[lev]=bcm_CSRMatrixDiag(A);
-  M_tmp[lev]=bcm_CSRMatrixl1Jac(A, D_tmp[lev]);
   int ierr;
 
   fprintf(stderr,"MatchingPairAgg num_sweeps: %d\n",num_sweeps);
@@ -138,11 +136,10 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
 	L_tmp[i]=bcm_CSRMatrixTriL(A_tmp[i],1);
 	U_tmp[i]=bcm_CSRMatrixTriU(A_tmp[i],1);
 	D_tmp[i]=bcm_CSRMatrixDiag(A_tmp[i]);
-	M_tmp[i]=bcm_CSRMatrixl1Jac(A_tmp[i], D_tmp[i]);
 	bcm_CSRMatrixDestroy(R);
 	for(k=1; k <= cr_it; ++k) 
 	  bcm_CSRMatrixRelax(A_tmp[i], L_tmp[i],
-			     U_tmp[i], D_tmp[i], M_tmp[i],
+			     U_tmp[i], D_tmp[i],
 			     rhs, cr_relax_type, cr_relax_weight, w_temp1); 
 	bcm_VectorSize(w_temp)=sizecoarse; 
 	bcm_VectorCopy(w_temp1,w_temp);
@@ -185,13 +182,11 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
     bcm_CSRMatrixDestroy(U_tmp[i]);
     bcm_CSRMatrixDestroy(P_tmp[i]);
     bcm_VectorDestroy(D_tmp[i]); 
-    bcm_VectorDestroy(M_tmp[i]); 
     A_tmp[i]=NULL;
     L_tmp[i]=NULL;
     U_tmp[i]=NULL;
     P_tmp[i]=NULL;
     D_tmp[i]=NULL;
-    M_tmp[i]=NULL;
   }
   bcm_AMGHierarchyDestroy(amg_hierarchy_tmp);
   bcm_VectorDestroy(rhs); 
@@ -490,8 +485,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   L_array= bcm_AMGHierarchyLArray(amg_hierarchy);
   U_array= bcm_AMGHierarchyUArray(amg_hierarchy);
   D_array= bcm_AMGHierarchyDArray(amg_hierarchy);
-  M_array= bcm_AMGHierarchyMArray(amg_hierarchy);
-
 
   double timesmoother;
   double timesmoothertot=0.0;
@@ -502,7 +495,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   L_array[lev]=bcm_CSRMatrixTriL(A,1);
   U_array[lev]=bcm_CSRMatrixTriU(A,1);
   D_array[lev]=bcm_CSRMatrixDiag(A);
-  M_array[lev]=bcm_CSRMatrixl1Jac(A, D_array[lev]);
   timesmoother=time_getWallclockSeconds()-timesmoother;
   fprintf(stderr,"Time for smoother setup: %e\n",timesmoother);
   timesmoothertot=timesmoothertot+timesmoother;
@@ -518,12 +510,11 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
     L_array[i]=NULL;
     U_array[i]=NULL;
     D_array[i]=NULL;
-    M_array[i]=NULL;
   }
   double *tmp_do;
   /* relax on w_temp */
   for(i=1; i <= cr_it; ++i)
-    bcm_CSRMatrixRelax(A_array[0], L_array[0], U_array[0], D_array[0],M_array[0], rhs,
+    bcm_CSRMatrixRelax(A_array[0], L_array[0], U_array[0], D_array[0], rhs,
 		       cr_relax_type, cr_relax_weight, w_temp);
 
   cmplxsmoothed=bcm_CSRMatrixNumNonzeros(A);
@@ -574,7 +565,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
       L_array[j]=bcm_CSRMatrixTriL(A_array[j],1);
       U_array[j]=bcm_CSRMatrixTriU(A_array[j],1);
       D_array[j]=bcm_CSRMatrixDiag(A_array[j]);
-      M_array[j]=bcm_CSRMatrixl1Jac(A_array[j],D_array[j]);
   timesmoother=time_getWallclockSeconds()-timesmoother;
   timesmoothertot=timesmoothertot+timesmoother;
   fprintf(stderr,"Time for smoother setup: %e\n",timesmoother);
@@ -616,7 +606,6 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   for(i=lev; i<=max_levels; i++) bcm_CSRMatrixDestroy(U_array[i]);
   for(i=lev; i<=max_levels; i++) bcm_CSRMatrixDestroy(L_array[i]);
   for(i=lev; i<=max_levels; i++) bcm_VectorDestroy(D_array[i]);
-  for(i=lev; i<=max_levels; i++) bcm_VectorDestroy(M_array[i]);
 
   bcm_VectorDestroy(rhs); 
   bcm_VectorDestroy(w_temp); 
@@ -667,11 +656,9 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
 	  if (L_array[j+1]!= NULL) bcm_CSRMatrixDestroy(L_array[j+1]);
 	  if (U_array[j+1]!= NULL) bcm_CSRMatrixDestroy(U_array[j+1]);
 	  if (D_array[j+1]!= NULL) bcm_VectorDestroy(D_array[j+1]);
-	  if (M_array[j+1]!= NULL) bcm_VectorDestroy(M_array[j+1]);
 	  L_array[j+1]=bcm_CSRMatrixTriL(A_array[j+1],1);
 	  U_array[j+1]=bcm_CSRMatrixTriU(A_array[j+1],1);
 	  D_array[j+1]=bcm_CSRMatrixDiag(A_array[j+1]);
-	  M_array[j+1]=bcm_CSRMatrixl1Jac(A_array[j+1],D_array[j+1]);
 
 	  bcm_CSRMatrixDestroy(R); 
 	  bcm_CSRMatrixDestroy(A_temp);
