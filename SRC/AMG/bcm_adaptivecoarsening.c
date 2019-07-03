@@ -55,14 +55,13 @@
  *********************************************************************************** */
 #define MATCH_HSL      1
 #define MATCH_SPRAL    2
-#define MATCH_SUITOR   3
 #define MATCH_PREIS    0
 bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
 				   bcm_CSRMatrix **P, int match_type, int num_sweeps,
 				   int max_sizecoarse, int max_levels, int *ftcoarse,
 				   int cr_it, int cr_relax_type, double cr_relax_weight)
 { 
-  bcm_CSRMatrix *A_temp,At, **A_tmp, **P_tmp,*P_temp , **L_tmp, **U_tmp, *R, *Ac, *PMM, *Pagg;
+  bcm_CSRMatrix *A_temp, At, **A_tmp, **P_tmp, *P_temp , **L_tmp, **U_tmp, *R, *Ac, *PMM, *Pagg;
   bcm_Vector **D_tmp;
   bcm_Vector  *w_temp, *w_temp1, *rhs;
   int lev, i, sizecoarse, k, real_num_sweeps, nsize_w, nsize_A;
@@ -312,19 +311,6 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
     fprintf(stderr,"Calling PREIS matching\n");
     p = bcm_CSRMatrixHMatch(AH);
     break;
-  /* call function for half-approximate matching based on Suitor algorithm*/
-  case MATCH_SUITOR:
-    bcm_CSRMatrixTranspose(AH, &AHT, 1);
-    AH_full=bcm_CSRMatrixAdd(AH,AHT);
-    nzeros = bcm_CSRMatrixNumNonzeros(AH_full);
-    
-    jcp = bcm_CSRMatrixI(AH_full);
-    ia  = bcm_CSRMatrixJ(AH_full);
-    val = bcm_CSRMatrixData(AH_full);
-    p=suitor(nrows_A, nzeros, jcp, ia, val);
-    bcm_CSRMatrixDestroy(AHT);
-    bcm_CSRMatrixDestroy(AH_full);
-    break;
   default:
     fprintf(stderr,"Error: unknown matching algorithm\n");
     return(-1);
@@ -441,7 +427,7 @@ bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data)
   double coarseratio=2.0, avcoarseratio=0.0;
 
   bcm_CSRMatrix **A_array, **P_array, **L_array, **U_array ;
-  bcm_Vector **D_array, **M_array;
+  bcm_Vector **D_array;
 
   bcm_AMGHierarchy *amg_hierarchy; /* Hierarchy to be built */
   A=bcm_AMGBuildDataCSRMatrix(amg_data);
