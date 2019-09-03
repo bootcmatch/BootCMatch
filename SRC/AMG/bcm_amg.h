@@ -193,7 +193,7 @@ int bcm_AMGSetRelaxWeight(void *data, double relax_weight);
 int bcm_AMGApplyDataDestroy(void *data);
 
 /* bcm_weightmat.c */
-bcm_CSRMatrix *bcm_CSRMatrixAhat( bcm_CSRMatrix *A, bcm_Vector *w );
+bcm_CSRMatrix *bcm_CSRMatrixAhat( bcm_CSRMatrix *A, bcm_Vector *w, int match_type );
 
 /* bcm_csr_linmatch.c */
 int *bcm_CSRMatrixHMatch( bcm_CSRMatrix *A );
