@@ -230,7 +230,7 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
 
   /* build matrix Ahat from A */
 
-  bcm_CSRMatrix *AH = bcm_CSRMatrixAhat(A,w);
+  bcm_CSRMatrix *AH = bcm_CSRMatrixAhat(A,w,match_type);
 
   /* build permutation vector by weighted matching  */
 
@@ -253,7 +253,7 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
     /* Now go for MC64 */
     mc64_default_control(&mc_cntrl);
     p   = (int *)calloc(2*nrows_L,sizeof(int));
-    int job   = 4;  /*maximize the sum of the transformed weight matrix */
+    int job   = 5;  /*maximize the product of the weight matrix */
     int mtype = 2;
     fprintf(stderr,"Calling mc64\n");
     mc64_matching(job,mtype,nrows_L,nrows_L,jcp,ia,val,&mc_cntrl,&mc_info,p,NULL);
