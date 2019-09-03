@@ -42,7 +42,7 @@
 
 bcm_CSRMatrix *
 bcm_CSRMatrixAhat( bcm_CSRMatrix *A,
-		   bcm_Vector *w )
+		   bcm_Vector *w, int match_type)
 {
 
   int     *A_i = bcm_CSRMatrixI(A);
@@ -174,6 +174,10 @@ bcm_CSRMatrixAhat( bcm_CSRMatrix *A,
 
     assert(nnz_AH==nnz_B);
 
+    bcm_CSRMatrixDestroy(B);
+  if(match_type == 0)
+  {
+
   /*prepare weight matrix for maximum product matching */
 
 
@@ -190,12 +194,13 @@ bcm_CSRMatrixAhat( bcm_CSRMatrix *A,
   for(i=1; i<nnz_AH; i++)
     {
       if(min_AH > fabs(AH_data[i])) min_AH=fabs(AH_data[i]);
-    } 
+    }
 
    for(i=1; i<nnz_W; i++) W_data[i]=log(fabs(AH_data[i])/(0.999*min_AH));  /* This seems to be generally good */
-   
-    bcm_CSRMatrixDestroy(B);
+
     bcm_CSRMatrixDestroy(AH);
 
     return W;
+  }
+  else return AH;
 }
