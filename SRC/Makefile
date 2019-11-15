@@ -13,7 +13,7 @@ LIBNAME=libBCM.a
 all:  libs
 
 
-libs:  util  matvec amg bootamg   linsolvers
+libs:  mutilities  mmatvec mamg mbootamg   mlinsolvers
 
 
 ###################################################################
@@ -21,19 +21,19 @@ libs:  util  matvec amg bootamg   linsolvers
 # ##################################################################
 #
 
-bootamg:
+mbootamg:
 	( cd BOOTAMG; $(MAKE) LIBNAME=$(LIBNAME))
 
-util:
+mutilities:
 	( cd utilities; $(MAKE)  LIBNAME=$(LIBNAME))
 
-matvec:
+mmatvec:
 	( cd MATVEC; $(MAKE)  LIBNAME=$(LIBNAME))
 
-amg:
+mamg:
 	( cd AMG; $(MAKE)  LIBNAME=$(LIBNAME))
 
-linsolvers:
+mlinsolvers:
 	( cd LINSOLVERS; $(MAKE)  LIBNAME=$(LIBNAME))
 
 clean: 

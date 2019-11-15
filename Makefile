@@ -16,7 +16,7 @@ libdir:
 includedir:
 	(if test ! -d include ; then mkdir include; fi; )
 
-libs: src 
+libs: msrc 
 	/bin/mv $(LIBNAME) lib
 
 ###################################################################
@@ -24,10 +24,10 @@ libs: src
 # ##################################################################
 #
 
-src:
+msrc:
 	( cd SRC; $(MAKE) LIBNAME=$(LIBNAME))
 
-test:
+mtest:
 	( cd Test; $(MAKE) )
 
 clean:
