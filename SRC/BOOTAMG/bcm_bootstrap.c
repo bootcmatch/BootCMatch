@@ -140,17 +140,20 @@ bcm_InnerIterations(bcm_BootAMGBuildData *bootamg_data, bcm_BootAMG *boot_amg, b
 
   bcm_CSRMatrix **A_array;
 
-  /* start iterative cycle */
-  for(iter=1; iter<=solver_it; iter++)
+   /* start iterative cycle */
+  iter=1;
+  while(iter<=solver_it && normold>DBL_MIN)
     {
       ierr = bcm_PrecApply(bootamg_data, boot_amg, amg_cycle, rhs, x);
       normnew=bcm_VectorANorm(A,x);
       conv_ratio=normnew/normold;
       normold=normnew;
+      iter++;
     }
 
   /* update smooth vector */
-  alpha=1.0/normnew;
+  if(normnew >DBL_MIN) alpha=1.0/normnew;
+  else alpha=1.0;
 
   printf("current smooth vector A-norm=%e\n",normnew);
 
