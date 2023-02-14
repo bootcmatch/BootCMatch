@@ -196,7 +196,10 @@ bcm_CSRMatrixAhat( bcm_CSRMatrix *A,
       if(min_AH > fabs(AH_data[i])) min_AH=fabs(AH_data[i]);
     }
 
-   for(i=0; i<nnz_W; i++) W_data[i]=log(fabs(AH_data[i])/(0.999*min_AH));  /* This seems to be generally good */
+    for(i=0; i<nnz_W; i++) {
+       if(min_AH > DBL_EPSILON) W_data[i]=log(fabs(AH_data[i])/(0.999*min_AH));
+       else W_data[i]=DBL_MAX;
+    }
 
     bcm_CSRMatrixDestroy(AH);
 
