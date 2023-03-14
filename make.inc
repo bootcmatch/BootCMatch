@@ -13,13 +13,13 @@
 #  Versions 4 and 5 have a slightly different interface, need
 #  to define which one. 
 #
-#SUPERLU_DIR=/opt/superlu/5.0/gnu/5.4.0
-#SUPERLU_INCDIR=$(SUPERLU_DIR)/include
-#SUPERLU_LIBDIR=$(SUPERLU_DIR)/lib
-#SUPERLU_LIBS=-lsuperlu -L$(SUPERLU_LIBDIR)
-#SUPERLU_LIBS=-lsuperlu
-#SUPERLU_INCDIR=/usr/include/SuperLU
-#SUPERLU_FLAGS=-DHAVE_SUPERLU -DSLU_VERSION_5 -I$(SUPERLU_INCDIR)
+SUPERLU_DIR=/opt/superlu/5.0/gnu/5.4.0
+SUPERLU_INCDIR=$(SUPERLU_DIR)/include
+SUPERLU_LIBDIR=$(SUPERLU_DIR)/lib
+SUPERLU_LIBS=-lsuperlu -L$(SUPERLU_LIBDIR)
+SUPERLU_LIBS=-lsuperlu
+SUPERLU_INCDIR=/usr/include/SuperLU
+SUPERLU_FLAGS=-DHAVE_SUPERLU -DSLU_VERSION_5 -I$(SUPERLU_INCDIR)
 
 # HSL library (for MC64)
 HSL_DIR=/opt/hsl
@@ -42,7 +42,7 @@ SPRAL_FLAGS=-DHAVE_SPRAL -I$(SPRAL_INCDIR)
 # LAPACK and BLAS are mandatory
 #
 LAPACK_LIBS=-llapack
-BLAS_LIBS=-lsatlas -L/usr/lib64/atlas
+BLAS_LIBS=-latlas -L/usr/lib64/atlas
 
 #
 # Compilers & such
