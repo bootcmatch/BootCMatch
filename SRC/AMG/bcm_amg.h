@@ -1,6 +1,6 @@
 /* 
                 BootCMatch 
-     Bootstrap AMG based on Compatible weighted Matching version 0.9
+     Bootstrap AMG based on Compatible weighted Matching version 1.0
     (C) Copyright 2017
                        Pasqua D'Ambra    IAC-CNR
                        Panayot S. Vassilevski Portland State University, OR USA
@@ -207,5 +207,8 @@ bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
 				   int cr_it, int cr_relax_type, double cr_relax_weight);
 int bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int match_type);
 bcm_AMGHierarchy * bcm_AdaptiveCoarsening(bcm_AMGBuildData *amg_data);
+
+/* bcm_seqsuitor.c */
+int* suitor(int n, int nnz, int *row, int *col, double *val);
 
 #endif

@@ -5,7 +5,7 @@ NONE                % sol file NONE if not present
 1                   % solver_type: 0 multiplicative, 1 symmetrized multi., 2 additive; NB: Here put 0 for single AMG component
 1                   % max_hrc, in bootstrap AMG, max hierarchies; NB: Here put 1 for single AMG component
 0.6                 % desired convergence rate of the composite AMG; NB: This is not generally obtained if criterion on max_hrc is reached
-2                   % matchtype: 0, Preis; 1 HSL-mc64; 2 Spral-Auction
+2                   % matchtype: 0, Preis; 1 HSL-mc64; 2 Spral-Auction; 3 Suitor
 0                   % aggrsweeps; 0, aggregates are pairs; 1 aggregates are double pairs ...
 0                   % aggr_type; 0 unsmoothed, 1 smoothed 
 39                  % max_levels; max number of levels built for the single hierarchy

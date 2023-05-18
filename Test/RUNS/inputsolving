@@ -5,8 +5,8 @@ poisson100x100-sol.mtx                % sol file NONE if not present
 0                   % solver_type: 0 multiplicative, 1 symmetrized multi., 2 additive; 
 1                   % max_hrc, in bootstrap AMG, max hierarchies
 0.8                 % desired convergence rate of the composite AMG
-0                   % matchtype: 0, Preis; 1 HSL-mc64; 2 Spral-Auction
-1                   % aggrsweeps; 0, aggregates are pairs; 1 aggregates are double pairs ...
+3                   % matchtype: 0, Preis; 1 HSL-mc64; 2 Spral-Auction; 3 Suitor
+0                   % aggrsweeps; 0, aggregates are pairs; 1 aggregates are double pairs ...
 0                   % aggr_type; 0 unsmoothed, 1 smoothed 
 39                  %max_levels; max number of levels in a single hierarchy
 3                   %cycle_type: 0-Vcycle, 1-Hcycle, 2-Wcycle, 3-Kcycle 

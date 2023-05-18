@@ -1,6 +1,6 @@
 /* 
                 BootCMatch 
-     Bootstrap AMG based on Compatible weighted Matching version 0.9
+     Bootstrap AMG based on Compatible weighted Matching version 1.0
     (C) Copyright 2017
                        Pasqua D'Ambra         IAC-CNR, IT
                        Panayot S. Vassilevski Portland State University, OR USA
@@ -39,7 +39,7 @@
 #include "bcm_bootamg.h"
 #include "bcm_linsolvers.h"
 
-#define BCM_VERSION_STRING  "0.9"
+#define BCM_VERSION_STRING  "1.0"
 #define BCM_VERSION_MAJOR   0
 #define BCM_VERSION_MINOR   9
 #define BCM_PATCHLEVEL      "-alpha"

@@ -1,6 +1,6 @@
 /*
                 BootCMatch
-     Bootstrap AMG based on Compatible Matching version 0.9
+     Bootstrap AMG based on Compatible Matching version 1.0
     (C) Copyright 2017
                        Pasqua D'Ambra    IAC-CNR
                        Panayot S. Vassilevski Portland State University, OR, USA
@@ -55,6 +55,7 @@
  *********************************************************************************** */
 #define MATCH_HSL      1
 #define MATCH_SPRAL    2
+#define MATCH_SUITOR   3
 #define MATCH_PREIS    0
 bcm_CSRMatrix * bcm_CSRMatchingAgg(bcm_CSRMatrix *A, bcm_Vector **w,
 				   bcm_CSRMatrix **P, int match_type, int num_sweeps,
@@ -307,9 +308,22 @@ bcm_CSRMatchingPairAgg(bcm_CSRMatrix *A, bcm_Vector *w, bcm_CSRMatrix **P, int m
 #endif
   /* call function for half-approximate matching based on Preis algorithm*/
   case MATCH_PREIS:
-    /* Fall through the default*/;
     fprintf(stderr,"Calling PREIS matching\n");
     p = bcm_CSRMatrixHMatch(AH);
+    break;
+  /* call function for half-approximate matching based on Suitor algorithm*/
+  case MATCH_SUITOR:
+  /*prepare weight matrix for maximum product matching */
+    bcm_CSRMatrixTranspose(AH, &AHT, 1);
+    AH_full=bcm_CSRMatrixAdd(AH,AHT);
+    nzeros = bcm_CSRMatrixNumNonzeros(AH_full);
+
+    jcp = bcm_CSRMatrixI(AH_full);
+    ia  = bcm_CSRMatrixJ(AH_full);
+    val = bcm_CSRMatrixData(AH_full);
+    p=suitor(nrows_A, nzeros, jcp, ia, val);
+    bcm_CSRMatrixDestroy(AHT);
+    bcm_CSRMatrixDestroy(AH_full);
     break;
   default:
     fprintf(stderr,"Error: unknown matching algorithm\n");

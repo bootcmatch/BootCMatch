@@ -14,6 +14,7 @@ FILES =\
  bcm_amg.c \
  bcm_linmatch.c \
  bcm_weightmat.c \
+ bcm_seqsuitor.c \
  bcm_adaptivecoarsening.c
 
 

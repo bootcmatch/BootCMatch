@@ -1,6 +1,6 @@
 /*
                 BootCMatch
-     Bootstrap AMG based on Compatible weighted Matching, version 0.9
+     Bootstrap AMG based on Compatible weighted Matching, version 1.0
     (C) Copyright 2017
                        Pasqua D'Ambra         IAC-CNR, IT
                        Panayot S. Vassilevski Portland State University, OR USA

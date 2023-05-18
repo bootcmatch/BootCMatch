@@ -1,6 +1,6 @@
 /*
                 BootCMatch
-     Bootstrap AMG based on Compatible Matching version 0.9
+     Bootstrap AMG based on Compatible Matching version 1.0
     (C) Copyright 2017
                        Pasqua D'Ambra    IAC-CNR
                        Panayot S. Vassilevski CACR-LLNL

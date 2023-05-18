@@ -1,6 +1,6 @@
 # BootCMatch
 Welcome to BootCMatch:
->     Bootstrap AMG based on Compatible weighted Matching, version 0.9.
+>     Bootstrap AMG based on Compatible weighted Matching, version 1.0.
 
 Pasqua D'Ambra, Institute for Applied Computing (IAC) of the Italian National Research Council (CNR), Italy
 
@@ -18,10 +18,11 @@ It contains the following components:
   * Flexible Conjugate Gradients preconditioned with AMG
 3. A set of test programs.
 
-The AMG hierarchies are built by using a weighted graph matching approach. We support three different maximum weight matching algorithms:
-1. An half-approximate algorithm (Preis, 1999);
+The AMG hierarchies are built by using a weighted graph matching approach. We support four different maximum weight matching algorithms:
+1. The half-approximate algorithm (Preis, 1999);
 2. The approximate auction algorithm from [SPRAL] (http://www.numerical.rl.ac.uk/spral/);
-3. The optimal matching from [HSL_MC64] (http://www.hsl.rl.ac.uk/catalogue/hsl_mc64.html)
+3. The optimal matching from [HSL_MC64] (http://www.hsl.rl.ac.uk/catalogue/hsl_mc64.html);
+4. The half-approximate Suitor algorithm (Manne, Halappanavar, 2014); 
 
 In the application of the AMG hierarchy (either as a solver or as a preconditioner) we provide a simple factorization, but we recommend to use our interface to [SuperLU] (http://crd-legacy.lbl.gov/~xiaoye/SuperLU/) for best performance.
 To see the software in action we provide three test programs:
