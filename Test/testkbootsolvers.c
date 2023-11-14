@@ -264,8 +264,7 @@ int  main(int argc, char *argv[])
      }
      break;
    }
-   bcm_AMGApplyDataGridSweeps(amg_cycle)=num_grid_sweeps;
-
+   bcm_AMGSetNumGridSweeps(amg_cycle,num_grid_sweeps);
 
    /* set arbitrary initial (smooth) vector: generally
       we use unitary vector or random vector */
